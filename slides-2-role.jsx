@@ -369,11 +369,11 @@ function SlideTools() {
     { src: DEVICON("slack", "original"), label: "Slack" }] }];
 
   return (
-    <section className="slide" data-screen-label="09 업무에 쓰는 도구">
+    <section className="slide" data-screen-label="09 업무 활용 툴">
       <SlideHead left={<span>01 직무 소개</span>} right={null} />
       <div className="skills">
         <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-          <h2 className="display display-3">업무에 쓰는 툴</h2>
+          <h2 className="display display-3">업무 활용 툴</h2>
         </div>
         <div className={`skill-list tool-list ${focus !== null ? "has-focus" : ""}`}>
           {rows.map((it, i) =>

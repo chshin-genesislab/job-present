@@ -83,16 +83,26 @@ function SlideCover3() {
   );
 }
 
-function AssignList({ items }) {
+function GateTable({ cols, items }) {
+  const [open, setOpen] = React.useState([]);
+  const all = open.length === items.length;
+  const toggle = (i) => setOpen(o => o.includes(i) ? o.filter(x=>x!==i) : [...o, i]);
   return (
-    <div className="assign-list">
+    <div className="gate">
+      <div className="gate-head">
+        <span className="n"></span>
+        <span className="gate-t"></span>
+        <span className="lab">{cols[0]}</span>
+        <span className="lab lab--edge">{cols[1]}
+          <button className="gate-all" onClick={(e)=>{e.stopPropagation();setOpen(all?[]:items.map((_,i)=>i))}}>{all?"접기":"모두 보기"}</button>
+        </span>
+      </div>
       {items.map((it,i) => (
-        <div key={i} className="assign-item">
+        <div key={i} className={"gate-row" + (open.includes(i) ? " is-open" : "")} onClick={()=>toggle(i)}>
           <span className="n">{String(i+1).padStart(2,'0')}</span>
-          <div className="body">
-            <span className="t">{it.t}</span>
-            <span className="d">{it.d}</span>
-          </div>
+          <span className="gate-t">{it.t}</span>
+          <span className="base">{it.base}</span>
+          <span className="edge">{it.edge}</span>
         </div>
       ))}
     </div>
@@ -103,21 +113,20 @@ function SlideAssignment() {
   return (
     <section className="slide assign-slide" data-screen-label="21 과제에서 보는 것">
       <SlideHead left={<span>03 취업 팁</span>} right={null} />
-      <div style={{display:"flex",flexDirection:"column",gap:12,marginBottom:20}}>
+      <div style={{display:"flex",flexDirection:"column",gap:12,marginBottom:18}}>
         <Eyebrow>ASSIGNMENT · 과제 · 포트폴리오</Eyebrow>
-        <h2 className="display display-3">과제(포트폴리오)에서 <em>보는 것</em></h2>
+        <h2 className="display display-3">과제·포트폴리오에서 <em>보는 것</em></h2>
       </div>
-      <div className="assign assign--single assign--dense">
-        <div className="assign-col">
-          <AssignList items={[
-            { t:"과제의 의도를 파악했는지", d:"요구사항 충족은 점수가 아니라 출발점입니다. 이 과제로 무엇을 보려는지 먼저 읽으려는 시도를 봅니다." },
-            { t:"직무에 대한 이해가 드러나는지", d:"백엔드, 프롬프팅, LLM 활용 어느 한쪽에만 치우치지 않고 균형 있게." },
-            { t:"사용자 관점에서 품질을 고민했는지", d:"명시되지 않은 부분이라도 사용자 관점에서 품질을 개선하려는 시도." },
-            { t:"무엇을 선택하고 무엇을 포기했는지", d:"결과물보다 판단의 흔적. 이유가 보이면 규모가 작아도 평가가 올라갑니다." },
-            { t:"결과를 어떻게 검증했는지", d:"무엇을 기준으로 잘 되었다고 판단했는지, 어떤 케이스에서 실패했는지가 적혀 있으면 눈에 띕니다." },
-          ]} />
-        </div>
-      </div>
+      <GateTable
+        cols={["대부분 여기까지 옵니다", "여기서 갈립니다"]}
+        items={[
+          { t:"과제의 의도", base:"과제 구현이 우선이다.", edge:"적혀 있지 않은 의도까지 읽는다. 이 과제로 무엇을 확인하려는지 파악한다." },
+          { t:"직무에 대한 이해", base:"프롬프팅에 집중한다.", edge:"시스템(백엔드 · 프론트엔드)과 LLM 활용을 균형 있게 구현한다." },
+          { t:"사용자 관점의 품질", base:"명시된 요구까지 정확히 만든다.", edge:"명시되지 않았지만 쓰는 사람이 불편할 지점을 손본다." },
+          { t:"과제 설명", base:"잘된 점을 부각한다.", edge:"어려운 점이 있었다면 무엇인지, 한계와 개선점에 대해 남긴다." },
+          { t:"결과의 검증", base:"동작하는 것을 확인한다.", edge:"무엇을 기준으로 잘 되었다고 했는지, 어디서 실패했는지 적는다." },
+        ]}
+      />
       <SlideFoot section="03 취업 팁" idx={21} />
     </section>
   );
@@ -127,22 +136,21 @@ function SlideInterview() {
   return (
     <section className="slide assign-slide" data-screen-label="22 면접에서 보는 것">
       <SlideHead left={<span>03 취업 팁</span>} right={null} />
-      <div style={{display:"flex",flexDirection:"column",gap:12,marginBottom:24}}>
+      <div style={{display:"flex",flexDirection:"column",gap:12,marginBottom:18}}>
         <Eyebrow>INTERVIEW · 면접</Eyebrow>
         <h2 className="display display-3">과제 면접에서 <em>보는 것</em></h2>
       </div>
-      <div className="assign assign--single">
-        <div className="assign-col">
-          <AssignList items={[
-            { t:"본인 코드를 본인이 설명할 수 있는지", d:'"이게 어떤 기능인가"가 아니라 "왜 이렇게 짰는가"까지.' },
-            { t:"과제를 진행한 과정을 설명할 수 있는지", d:"어디에 집중했고, 어디서 막혔고, 그것을 극복하기 위해 어떤 시도를 했는지." },
-            { t:"모르는 것을 모른다고 말할 수 있는지", d:"아는 것과 모르는 것을 확실하게 구분할 수 있는지. 모르는 것을 빠르게 습득할 준비가 되어 있는지." },
-          ]} />
-        </div>
-      </div>
+      <GateTable
+        cols={["대부분 여기까지 옵니다", "여기서 갈립니다"]}
+        items={[
+          { t:"코드에 대한 설명", base:'"이 부분은 어떤 기능입니다"라고 설명한다.', edge:'"왜 이렇게 짰는지", 다른 방법은 왜 택하지 않았는지까지 설명한다.' },
+          { t:"진행 과정에 대한 설명", base:"무엇을 만들었는지 순서대로 말한다.", edge:"어디에 집중했고, 어디서 막혔고, 그것을 넘기 위해 무엇을 시도했는지 말한다." },
+          { t:"모르는 것에 대한 태도", base:"모르지만 아는 것처럼 최선을 다해 답한다.", edge:"아는 것과 모르는 것을 분명히 구분해서 말한다." },
+        ]}
+      />
       <SlideFoot section="03 취업 팁" idx={22} />
     </section>
   );
 }
 
-Object.assign(window, { SlideMindsets, SlideCover3, SlideAssignment, SlideInterview });
+Object.assign(window, { SlideMindsets, SlideCover3, SlideAssignment, SlideInterview, GateTable });

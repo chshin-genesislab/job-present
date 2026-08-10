@@ -1,22 +1,47 @@
 // slides-3-cases.jsx — Slides 10–13 (case details), 14 (section summary)
 
-function CaseDetail({ n, total, title, sub, sectionLabel, idx, screenLabel, core, feats }) {
+const CASE_SYMBOLS = {
+  chat: (
+    <svg viewBox="0 0 120 80" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M10 14h56a6 6 0 0 1 6 6v20a6 6 0 0 1-6 6H28l-12 10V46h-6a6 6 0 0 1-6-6V20a6 6 0 0 1 6-6Z" />
+      <path d="M54 34h56a6 6 0 0 1 6 6v18a6 6 0 0 1-6 6H74l-10 8v-8h-10a6 6 0 0 1-6-6V40a6 6 0 0 1 6-6Z" />
+      <circle cx="86" cy="49" r="2" />
+      <circle cx="96" cy="49" r="2" />
+      <circle cx="106" cy="49" r="2" />
+    </svg>
+  ),
+  radar: (
+    <svg viewBox="0 0 120 80" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="24" cy="26" r="9" />
+      <path d="M10 62c0-8.5 6.3-14.5 14-14.5S38 53.5 38 62" />
+      <path d="M56 66V44M72 66V30M88 66V50M104 66V22" strokeWidth="2" />
+      <path d="M50 66h60" opacity=".5" />
+      <path d="M56 36 72 20l16 12 16-14" opacity=".45" />
+      <circle cx="56" cy="36" r="2.2" opacity=".65" />
+      <circle cx="72" cy="20" r="2.2" opacity=".65" />
+      <circle cx="88" cy="32" r="2.2" opacity=".65" />
+      <circle cx="104" cy="18" r="2.2" opacity=".65" />
+    </svg>
+  ),
+};
+
+function CaseDetail({ n, total, title, sub, sectionLabel, idx, screenLabel, core, feats, image, imageCaption, symbol, symbolCaption }) {
   return (
     <section className="slide" data-screen-label={screenLabel}>
       <SlideHead left={<span>{sectionLabel}</span>} right={null} />
-      <div className="case-detail">
+      <div className={`case-detail ${image || symbol ? "case-detail--img" : ""} ${symbol ? "case-detail--flip" : ""}`}>
         <div className="case-detail-l">
           <div className="case-detail-eyebrow">CASE {n} / {total}</div>
           <h2 className="case-detail-title">
             {title}
             {sub ? <small>{sub}</small> : null}
           </h2>
+        </div>
+        <div className="case-detail-body">
           <div className="case-detail-core">
             <strong style={{ display: "block", font: "500 11px/1 var(--sans-en)", letterSpacing: ".18em", color: "var(--accent)", marginBottom: 8 }}>핵심</strong>
             {core}
           </div>
-        </div>
-        <div className="case-detail-r">
           {feats.map((f) =>
           <div key={f.n} className="case-feat">
               <span className="case-feat-n">{f.n}</span>
@@ -27,6 +52,16 @@ function CaseDetail({ n, total, title, sub, sectionLabel, idx, screenLabel, core
             </div>
           )}
         </div>
+        {image ?
+        <figure className="case-shot">
+          <img src={image} alt="" />
+          {imageCaption ? <figcaption>{imageCaption}</figcaption> : null}
+        </figure> : null}
+        {symbol ?
+        <figure className="case-shot case-shot--symbol">
+          <div className="case-symbol">{CASE_SYMBOLS[symbol]}</div>
+          {symbolCaption ? <figcaption>{symbolCaption}</figcaption> : null}
+        </figure> : null}
       </div>
       <SlideFoot section={sectionLabel} idx={idx} />
     </section>);
@@ -41,6 +76,8 @@ function SlideCase1() {
       sectionLabel="01 직무 소개"
       idx={11}
       screenLabel="11 사례 1 면접 총평"
+      image="assets/case-01-report.png"
+      imageCaption="실제 생성된 총평 리포트"
       core={<>수치 결과를 <strong style={{ color: "var(--accent)", fontWeight: 600 }}>사람이 읽을 수 있는 리포트</strong>로 가공.</>}
       feats={[
       { n: "01", t: "데이터 가공", d: "주어진 데이터를 종합해 자연스러운 글로 가공합니다." },
@@ -59,6 +96,7 @@ function SlideCase2() {
       sectionLabel="01 직무 소개"
       idx={12}
       screenLabel="12 사례 2 정서 상담"
+      symbol="chat"
       core={<>단순 질의응답이 아니라, <strong style={{ color: "var(--accent)", fontWeight: 600 }}>지속적인 관계를 가지면서 안전까지 챙기는 시스템</strong>.</>}
       feats={[
       { n: "01", t: "메모리 활용", d: "이전 대화를 기억하고 자연스럽게 이어갑니다." },
@@ -78,6 +116,8 @@ function SlideCase3() {
       sectionLabel="01 직무 소개"
       idx={13}
       screenLabel="13 사례 3 도서 분류"
+      image="assets/case-03-lcc.png"
+      imageCaption="LCC 온라인 검색 페이지 — 이 계층을 따라가며 분류합니다"
       core={<>전문 사서 <strong style={{ color: "var(--accent)", fontWeight: 600 }}>업무 대체</strong>.</>}
       feats={[
       { n: "01", t: "웹 크롤링", d: "최신 분류 체계를 실시간으로 수집해 LLM에 주입." },
@@ -96,7 +136,8 @@ function SlideCase4() {
       sectionLabel="01 직무 소개"
       idx={14}
       screenLabel="14 사례 4 역량 진단"
-      core={<>정답표가 없는 판정을, <strong style={{ color: "var(--accent)", fontWeight: 600 }}>누구에게나 같은 기준으로</strong> 내놓아야 하는 문제.</>}
+      symbol="radar"
+      core={<><strong style={{ color: "var(--accent)", fontWeight: 600 }}>누구에게나 공정한 기준</strong>으로 판정.</>}
       feats={[
       { n: "01", t: "택소노미 해석", d: "인사팀이 정의한 스킬 체계를 시스템이 쓸 수 있는 형태로." },
       { n: "02", t: "비결정성 제어", d: "한 진단 안에서 같은 활동을 한 사람에게는 같은 스킬이 부여되도록. 진단의 공정성이 걸린 부분." },

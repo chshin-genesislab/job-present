@@ -15,7 +15,7 @@ function SlideCover2() {
   );
 }
 
-function SkillSection({ label, headline, items, idx, screenLabel }) {
+function SkillSection({ label, headline, lede, items, idx, screenLabel }) {
   const [pinned, setPinned] = useState(null);
   const [hover, setHover] = useState(null);
   const focus = hover !== null ? hover : pinned;
@@ -26,6 +26,7 @@ function SkillSection({ label, headline, items, idx, screenLabel }) {
         <div style={{display:"flex",flexDirection:"column",gap:14}}>
           <Eyebrow>{label}</Eyebrow>
           <h2 className="display display-2">{headline}</h2>
+          {lede ? <p className="skills-lede">{lede}</p> : null}
         </div>
         <div className={`skill-list ${focus!==null?"has-focus":""}`}>
           {items.map((it,i) => (
@@ -53,9 +54,10 @@ function SlideHard() {
     <SkillSection
       label="하드 스킬"
       headline={<>하드 스킬</>}
+      lede="배워서 익히는, 눈에 보이는 기술. 코드와 시스템으로 증명되는 능력입니다."
       items={[
         { name:"프로그래밍 능력", desc:"문법, 비동기 처리, API 호출 같은 기본기. 언어는 무엇이든 상관없습니다. 다만 문법을 아는 것과 기본기가 탄탄한 것은 다릅니다." },
-        { name:"프롬프트와 컨텍스트 설계 능력", desc:"LLM이 원하는 결과를 내도록 지시와 맥락을 잘 짜는 능력. 이걸 잘하려면 LLM이 어떻게 동작하는지, 어떤 한계가 있는지를 이해해야 합니다." },
+        { name:"컨텍스트 설계 능력", desc:"LLM이 원하는 결과를 내도록 지시와 맥락을 잘 짜는 능력. 이걸 잘하려면 LLM이 어떻게 동작하는지, 어떤 한계가 있는지를 이해해야 합니다." },
         { name:"서비스 환경에 대한 이해", desc:"서버, API 통신, 데이터 흐름 같은 시스템 동작 방식. LLM은 부품일 뿐, 전체 시스템이 잘 동작해야 서비스를 만들 수 있습니다." },
       ]}
       idx={17}
@@ -69,6 +71,7 @@ function SlideSoft() {
     <SkillSection
       label="소프트 스킬"
       headline={<>소프트 스킬</>}
+      lede="일하는 방식과 태도. 가르치기 어렵지만, 성장 속도를 가장 크게 가르는 부분입니다."
       items={[
         { name:"비판적 사고", desc:"의문이 들면 반드시 짚고 묻는 자세. AI가 낸 결과를 그대로 받지 않고 의심하고 검증하는 것. 요구되는 ‘AI 활용 역량’이 사실 이겁니다." },
         { name:"끈기", desc:"LLM 결과는 한 번에 완성되지 않습니다. 같은 입력에도 결과가 매번 다릅니다. 어제 되던 게 오늘 안 되기도 합니다." },
