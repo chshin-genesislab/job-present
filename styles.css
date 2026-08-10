@@ -1,0 +1,1210 @@
+:root{
+  /* Palette — from PPT */
+  --ink: #16161A;
+  --ink-mid: #57575A;
+  --ink-soft: #737376;
+  --ink-mute: #969698;
+  --line: #E7E7EA;
+  --line-soft: #F2F2F4;
+  --bg: #FFFFFF;
+  --bg-soft: #EEF1F9;
+  --bg-soft-2: #F6F8FD;
+  --accent: #0110E4;
+  --accent-soft: #E5E7FC;
+
+  /* Type */
+  --serif: "IBM Plex Mono","JetBrains Mono",ui-monospace,monospace;
+  --sans-en: "IBM Plex Sans", "Pretendard Variable", "Pretendard", -apple-system, system-ui, sans-serif;
+  --sans-ko: "Pretendard Variable","Pretendard","IBM Plex Sans","Spoqa Han Sans Neo", -apple-system, system-ui, sans-serif;
+
+  /* Layout */
+  --sidebar-w: 260px;
+  --content-pad-x: 64px;
+  --content-pad-y: 56px;
+}
+
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);
+  font-family:var(--sans-ko);
+  font-feature-settings:"ss01","ss03","tnum";
+  -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;
+  text-rendering:optimizeLegibility;
+}
+body{overflow:hidden}
+
+/* Boot splash — visible until React mounts */
+.boot{
+  position:fixed;inset:0;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;
+  background:var(--bg);color:var(--ink);
+  z-index:1;
+}
+.boot-mark{
+  font:700 clamp(28px,3.4vw,44px)/1 var(--sans-ko);
+  letter-spacing:-.025em;
+}
+.boot-accent{color:var(--accent)}
+.boot-dots{display:flex;gap:6px}
+.boot-dots span{
+  width:6px;height:6px;border-radius:50%;background:var(--ink-mute);
+  animation: bootPulse 1.2s ease-in-out infinite;
+}
+.boot-dots span:nth-child(2){animation-delay:.15s}
+.boot-dots span:nth-child(3){animation-delay:.3s}
+@keyframes bootPulse{
+  0%,80%,100%{opacity:.2;transform:scale(.85)}
+  40%{opacity:1;transform:scale(1)}
+}
+
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;padding:0}
+a{color:inherit;text-decoration:none}
+
+/* ───── App shell ───── */
+.app{
+  display:grid;
+  grid-template-columns: var(--sidebar-w) 1fr;
+  height:100vh;
+  background:var(--bg);
+}
+
+/* ───── Sidebar ───── */
+.sb{
+  position:relative;
+  border-right:1px solid var(--line);
+  background:var(--bg);
+  display:flex;flex-direction:column;
+  padding:32px 28px 24px;
+  overflow:hidden;
+}
+.sb-brand{
+  display:flex;flex-direction:column;gap:6px;
+  padding-bottom:24px;border-bottom:1px solid var(--line-soft);
+}
+.sb-brand-eyebrow{
+  font:500 10.5px/1.3 var(--sans-en);
+  letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-mute);
+}
+.sb-brand-title{
+  font:600 17px/1.25 var(--sans-ko);
+  letter-spacing:-.01em;color:var(--ink);
+}
+.sb-brand-sub{
+  font:400 11.5px/1.4 var(--sans-ko);color:var(--ink-soft);margin-top:2px;
+}
+
+.sb-toc{
+  flex:1;min-height:0;
+  margin-top:20px;
+  padding-right:4px;
+  display:flex;flex-direction:column;gap:2px;
+  overflow-y:auto;
+  scrollbar-width:thin;scrollbar-color:var(--line) transparent;
+}
+.sb-toc::-webkit-scrollbar{width:6px}
+.sb-toc::-webkit-scrollbar-thumb{background:var(--line);border-radius:3px}
+
+.sb-sec{
+  display:flex;flex-direction:column;
+  padding:10px 0 8px;
+}
+.sb-sec + .sb-sec{border-top:1px solid var(--line-soft)}
+.sb-sec-hd{
+  display:flex;align-items:baseline;gap:10px;
+  padding:6px 6px 4px;border-radius:6px;
+  cursor:pointer;transition:background .15s;
+}
+.sb-sec-hd:hover{background:var(--line-soft)}
+.sb-sec-num{
+  font:500 10px/1 var(--sans-en);letter-spacing:.08em;
+  color:var(--ink-mute);min-width:18px;
+}
+.sb-sec-name{
+  font:500 12.5px/1.3 var(--sans-ko);color:var(--ink-mid);letter-spacing:-.005em;
+}
+.sb-sec.active .sb-sec-name{color:var(--ink)}
+.sb-sec.active .sb-sec-num{color:var(--accent)}
+
+.sb-slides{
+  display:flex;flex-direction:column;
+  padding-left:28px;margin-top:2px;
+  border-left:1px solid var(--line-soft);
+  margin-left:7px;
+}
+.sb-slide{
+  display:flex;align-items:center;gap:10px;
+  padding:5px 8px;border-radius:5px;
+  cursor:pointer;color:var(--ink-soft);
+  font:400 11.5px/1.3 var(--sans-ko);
+  position:relative;
+  transition:color .15s, background .15s;
+}
+.sb-slide:hover{color:var(--ink-mid);background:var(--line-soft)}
+.sb-slide.active{
+  color:var(--ink);font-weight:500;
+}
+.sb-slide.active::before{
+  content:"";position:absolute;left:-29px;top:50%;transform:translateY(-50%);
+  width:3px;height:14px;background:var(--accent);border-radius:2px;
+}
+.sb-slide-n{
+  font:500 9.5px/1 var(--sans-en);letter-spacing:.06em;
+  color:var(--ink-mute);min-width:16px;
+}
+.sb-slide.active .sb-slide-n{color:var(--accent)}
+
+.sb-foot{
+  padding-top:16px;border-top:1px solid var(--line-soft);
+  display:flex;flex-direction:column;gap:10px;
+}
+.sb-prog{
+  height:2px;background:var(--line);border-radius:2px;overflow:hidden;
+}
+.sb-prog-bar{
+  height:100%;background:var(--accent);
+  transition:width .4s cubic-bezier(.2,.8,.2,1);
+}
+.sb-prog-text{
+  display:flex;justify-content:space-between;
+  font:500 10.5px/1.2 var(--sans-en);letter-spacing:.08em;
+  color:var(--ink-mute);
+}
+
+/* ───── Stage (main scrollable area) ───── */
+.stage{
+  position:relative;
+  height:100vh;
+  overflow-y:scroll;
+  scroll-snap-type:y proximity;
+  scroll-behavior:smooth;
+  scrollbar-width:none;
+}
+.stage::-webkit-scrollbar{display:none}
+
+.slide{
+  scroll-snap-align:start;
+  min-height:100vh;
+  display:flex;flex-direction:column;
+  padding:var(--content-pad-y) var(--content-pad-x);
+  position:relative;
+  background:var(--bg);
+}
+.slide--soft{background:var(--bg-soft)}
+.slide--ink{background:var(--ink);color:#FAFAFB}
+.slide--ink .label-row,
+.slide--ink .slide-foot{color:#9A9AA0}
+
+/* Slide head: subtle context row */
+.slide-head{
+  display:flex;justify-content:space-between;align-items:center;
+  font:500 10.5px/1.2 var(--sans-en);letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-mute);
+  margin-bottom:64px;
+}
+.slide-head-l, .slide-head-r{display:flex;gap:18px;align-items:center}
+.slide-head em{color:var(--ink);font-style:normal;font-weight:600}
+
+.slide-foot{
+  margin-top:auto;
+  display:flex;justify-content:space-between;align-items:center;
+  font:500 10.5px/1.2 var(--sans-en);letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-mute);
+  padding-top:48px;
+}
+.slide-foot em{color:var(--ink-mid);font-style:normal;font-weight:600}
+
+/* Numbers row helper */
+.label-row{
+  display:flex;gap:14px;align-items:center;
+  font:500 11px/1 var(--sans-en);letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink-mute);
+}
+.label-row .dot{width:4px;height:4px;background:currentColor;border-radius:50%}
+
+/* Big display text */
+.display{
+  font-family:var(--sans-ko);
+  font-weight:700;letter-spacing:-.025em;line-height:1.08;
+  color:var(--ink);
+}
+.display em{font-style:normal;color:var(--accent)}
+.display-1{font-size:clamp(48px, 5.8vw, 88px)}
+.display-2{font-size:clamp(40px, 4.6vw, 68px)}
+.display-3{font-size:clamp(32px, 3.4vw, 50px)}
+.display-4{font-size:clamp(24px, 2.4vw, 36px)}
+
+.eyebrow{
+  font:500 11px/1 var(--sans-en);letter-spacing:.18em;
+  text-transform:uppercase;color:var(--ink-mute);
+}
+
+.muted{color:var(--ink-soft)}
+.ink-mid{color:var(--ink-mid)}
+.accent{color:var(--accent)}
+
+/* Slide counter (bottom right) */
+.counter{
+  position:fixed;
+  right:36px;bottom:28px;
+  z-index:30;
+  display:flex;align-items:center;gap:8px;
+  padding:6px 10px;border-radius:8px;
+  background:rgba(255,255,255,.86);
+  backdrop-filter:blur(8px);
+  border:1px solid var(--line);
+  font:500 11.5px/1 var(--sans-en);letter-spacing:.08em;
+  color:var(--ink-mid);
+  font-variant-numeric:tabular-nums;
+  pointer-events:none;
+  user-select:none;
+}
+.counter em{color:var(--ink);font-style:normal;font-weight:600}
+
+/* Nav arrows */
+.navbtn{
+  position:fixed;right:36px;z-index:30;
+  width:36px;height:36px;border-radius:50%;
+  border:1px solid var(--line);background:rgba(255,255,255,.86);
+  backdrop-filter:blur(8px);
+  color:var(--ink-mid);
+  display:flex;align-items:center;justify-content:center;
+  transition:background .15s, color .15s, border-color .15s;
+}
+.navbtn:hover{color:var(--ink);border-color:var(--ink-mid)}
+.navbtn:disabled{opacity:.3;cursor:default}
+.navbtn--up{bottom:118px}
+.navbtn--down{bottom:74px}
+
+/* Keyboard hint */
+.khint{
+  position:fixed;left:50%;bottom:24px;transform:translateX(-50%);
+  z-index:30;
+  display:flex;align-items:center;gap:10px;
+  font:500 10.5px/1 var(--sans-en);letter-spacing:.12em;
+  color:var(--ink-mute);
+  opacity:.7;pointer-events:none;
+  transition:opacity .5s;
+}
+.khint.fade{opacity:0}
+.kb{
+  display:inline-flex;align-items:center;justify-content:center;
+  min-width:18px;height:18px;padding:0 5px;
+  border:1px solid var(--line);border-bottom-width:2px;border-radius:4px;
+  background:#fff;color:var(--ink-mid);font:500 10.5px/1 var(--sans-en);
+}
+
+/* ─── Slide 1: title ─── */
+.title-slide{
+  display:grid;grid-template-rows:auto 1fr auto;gap:0;
+  padding:48px 80px;
+}
+.title-head{
+  display:flex;justify-content:space-between;align-items:flex-start;
+}
+.title-head-l, .title-head-r{display:flex;flex-direction:column;gap:4px}
+.title-head-l .label{font:500 10.5px/1.3 var(--sans-en);letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-mute);}
+.title-head-l .what{font:600 12px/1.3 var(--sans-ko);color:var(--ink);margin-top:6px}
+.title-head-r{align-items:flex-end;text-align:right}
+.title-head-r .name{font:600 14px/1.2 var(--sans-ko);color:var(--ink)}
+.title-head-r .team{font:400 11.5px/1.4 var(--sans-ko);color:var(--ink-soft)}
+
+.title-center{
+  align-self:center;
+  display:flex;flex-direction:column;gap:36px;
+  max-width:1100px;
+}
+.title-eyebrow{display:flex;align-items:center;gap:14px}
+.title-headline{
+  font:700 clamp(40px, 4.4vw, 68px)/1.1 var(--sans-ko);
+  letter-spacing:-.03em;color:var(--ink);
+}
+.title-headline .row{display:block}
+.title-headline .strong{color:var(--ink)}
+.title-headline .blue{color:var(--accent)}
+
+.title-foot{
+  display:flex;justify-content:space-between;align-items:flex-end;
+  font:500 10.5px/1.3 var(--sans-en);letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-mute);
+}
+
+/* ─── Slide 2: TOC ─── */
+.toc-grid{
+  display:grid;grid-template-columns:repeat(2,1fr);
+  gap:0;
+  flex:1;
+  border-top:1px solid var(--line);
+  border-left:1px solid var(--line);
+}
+.toc-item{
+  border-right:1px solid var(--line);border-bottom:1px solid var(--line);
+  padding:36px 32px;display:flex;flex-direction:column;gap:14px;
+  transition:background .2s;cursor:pointer;
+  position:relative;
+}
+.toc-item:hover{background:var(--bg-soft-2)}
+.toc-item:hover .toc-jump{opacity:1;transform:translateX(0)}
+.toc-num{font:600 14px/1 var(--sans-en);letter-spacing:.04em;color:var(--accent)}
+.toc-name{font:700 28px/1.15 var(--sans-ko);letter-spacing:-.02em;color:var(--ink)}
+.toc-desc{font:400 14px/1.55 var(--sans-ko);color:var(--ink-soft);margin-top:auto}
+.toc-jump{
+  position:absolute;right:24px;top:32px;
+  font:500 10.5px/1 var(--sans-en);letter-spacing:.12em;text-transform:uppercase;
+  color:var(--accent);
+  opacity:0;transform:translateX(-4px);
+  transition:opacity .2s, transform .2s;
+}
+
+/* ─── Section cover (slides 3, 12, 15, 18) ─── */
+.cover{
+  display:grid;grid-template-rows:auto 1fr auto;
+  height:100%;
+}
+.cover-head{display:flex;justify-content:space-between;align-items:flex-start}
+.cover-num{
+  font:500 14px/1.2 var(--sans-en);letter-spacing:.14em;color:var(--accent);
+}
+.cover-center{
+  align-self:center;display:flex;flex-direction:column;gap:32px;max-width:1100px;
+}
+.cover-eyebrow{font:500 12px/1 var(--sans-en);letter-spacing:.2em;color:var(--ink-mute);text-transform:uppercase}
+.cover-title{
+  font:700 clamp(48px, 6vw, 92px)/1.05 var(--sans-ko);letter-spacing:-.03em;color:var(--ink);
+}
+.cover-title em{font-style:normal;color:var(--accent)}
+.cover-sub{font:400 18px/1.55 var(--sans-ko);color:var(--ink-soft);max-width:680px}
+.cover-rule{
+  width:120px;height:2px;background:var(--ink);margin-top:8px;
+}
+
+/* ─── Slide 4: GPT vs ChatGPT — hover reveals everything, ChatGPT wraps GPT ─── */
+.vs-stage{
+  position:relative;
+  flex:1;
+  margin:8px 0 24px;
+  min-height:360px;
+  cursor:pointer;
+  display:grid;
+  place-items:center;
+}
+
+/* Outer ChatGPT halo */
+.vs-halo{
+  position:absolute;inset:0;
+  border:1.5px solid transparent;
+  background:transparent;
+  border-radius:8px;
+  transition:border-color .45s, background .45s;
+  pointer-events:none;
+}
+.vs-stage--s2 .vs-halo{
+  border-color:var(--accent);
+  background:var(--bg-soft);
+}
+.vs-halo > span{
+  position:absolute;
+  opacity:0;
+  transition:opacity .4s;
+}
+.vs-stage--s2 .vs-halo > span{opacity:1}
+/* ChatGPT name stays visible always */
+.vs-halo > span.vs-halo-name{opacity:1}
+
+.vs-halo-eyebrow{
+  top:22px;left:28px;
+  font:500 11px/1 var(--sans-en);letter-spacing:.18em;text-transform:uppercase;color:var(--accent);
+}
+.vs-halo-eyebrow em{font-style:normal;color:var(--accent)}
+.vs-halo-meta{
+  top:22px;right:28px;
+  font:500 12.5px/1.4 var(--sans-ko);color:var(--accent);text-align:right;letter-spacing:-.005em;
+}
+
+/* Center container — GPT card + ChatGPT mate */
+.vs-center{
+  position:relative;z-index:2;
+  display:flex;align-items:center;gap:48px;
+}
+.vs-mate-wrap{
+  position:relative;
+  display:flex;align-items:center;justify-content:center;
+  padding:48px 56px;
+}
+.vs-mate-eyebrow{
+  position:absolute;top:14px;left:0;right:0;text-align:center;
+  font:500 11px/1 var(--sans-en);letter-spacing:.18em;text-transform:uppercase;color:var(--ink-mute);
+  opacity:0;transition:opacity .4s, color .4s;
+}
+.vs-mate-eyebrow em{font-style:normal;color:var(--ink-mid)}
+.vs-stage--s2 .vs-mate-eyebrow{opacity:1;color:var(--accent)}
+.vs-stage--s2 .vs-mate-eyebrow em{color:var(--accent)}
+.vs-mate{
+  font:700 80px/.95 var(--sans-en);letter-spacing:-.04em;color:var(--ink);
+  transition:color .4s;
+}
+.vs-stage--s2 .vs-mate{color:var(--accent)}
+.vs-mate-meta{
+  position:absolute;bottom:14px;left:0;right:0;text-align:center;
+  font:500 12.5px/1.4 var(--sans-ko);color:var(--ink-mute);letter-spacing:-.005em;
+  opacity:0;transition:opacity .4s, color .4s;
+}
+.vs-stage--s2 .vs-mate-meta{opacity:1;color:var(--accent)}
+.vs-mate-body{
+  position:absolute;top:100%;left:50%;transform:translateX(-50%);
+  margin:0;padding-top:8px;
+  font:400 14px/1.5 var(--sans-ko);color:var(--ink-mid);max-width:340px;
+  text-align:center;
+  max-height:0;overflow:hidden;opacity:0;
+  transition:max-height .5s, opacity .4s;
+}
+.vs-stage--s2 .vs-mate-body{max-height:120px;opacity:1}
+
+/* Inner GPT card */
+.vs-inner{
+  position:relative;z-index:2;
+  display:flex;align-items:center;justify-content:center;
+  padding:48px 56px;
+  border:1px solid transparent;
+  background:var(--bg);
+  border-radius:6px;
+  transition:border-color .4s;
+}
+.vs-stage--s1 .vs-inner{
+  border-color:var(--ink);
+}
+.vs-inner-eyebrow{
+  position:absolute;top:14px;left:0;right:0;text-align:center;
+  font:500 11px/1 var(--sans-en);letter-spacing:.18em;text-transform:uppercase;color:var(--ink-mute);
+  opacity:0;transition:opacity .4s;
+}
+.vs-inner-eyebrow em{font-style:normal;color:var(--ink-mid)}
+.vs-stage--s1 .vs-inner-eyebrow{opacity:1}
+.vs-inner-name{
+  font:700 80px/.95 var(--sans-en);letter-spacing:-.04em;color:var(--ink);
+}
+.vs-inner-meta{
+  position:absolute;bottom:14px;left:0;right:0;text-align:center;
+  font:500 12.5px/1.4 var(--sans-ko);color:var(--ink-mute);letter-spacing:-.005em;
+  opacity:0;transition:opacity .4s;
+}
+.vs-stage--s1 .vs-inner-meta{opacity:1}
+.vs-inner-body{
+  position:absolute;top:100%;left:50%;transform:translateX(-50%);
+  margin:0;padding-top:8px;
+  font:400 14px/1.5 var(--sans-ko);color:var(--ink-mid);max-width:280px;
+  text-align:center;
+  max-height:0;overflow:hidden;opacity:0;
+  transition:max-height .5s, opacity .4s;
+}
+.vs-stage--s1 .vs-inner-body{max-height:80px;opacity:1}
+
+/* ─── Slide 5: three roles ─── */
+.role-flow{
+  display:grid;
+  grid-template-columns:1fr 1.5fr 1fr 1.5fr 1fr;
+  align-items:center;
+  margin-bottom:0;
+  padding:14px 0 22px;
+}
+.rf-node{
+  display:flex;flex-direction:column;align-items:center;gap:6px;
+  position:relative;
+}
+.rf-dot{
+  width:10px;height:10px;border-radius:50%;
+  background:var(--bg);border:1.5px solid var(--ink-mute);
+}
+.rf-node--bridge .rf-dot{
+  width:14px;height:14px;
+  background:var(--accent);border-color:var(--accent);
+  box-shadow:0 0 0 4px var(--accent-soft);
+}
+.rf-label{
+  font:600 11px/1 var(--sans-en);letter-spacing:.18em;
+  color:var(--ink-mute);
+}
+.rf-node--bridge .rf-label{color:var(--accent);font-weight:700}
+.rf-sub{
+  font:500 10px/1 var(--sans-ko);letter-spacing:.04em;
+  color:var(--accent);margin-top:-2px;
+}
+.rf-link{
+  position:relative;height:1px;background:var(--line);
+  display:flex;align-items:center;justify-content:center;
+}
+.rf-link::after{
+  content:"";position:absolute;right:-1px;top:50%;
+  width:6px;height:6px;
+  border-top:1.5px solid var(--ink-mute);border-right:1.5px solid var(--ink-mute);
+  transform:translateY(-50%) rotate(45deg);
+}
+.rf-tag{
+  position:absolute;top:-18px;left:50%;transform:translateX(-50%);
+  font:500 10px/1 var(--sans-en);letter-spacing:.14em;color:var(--ink-mute);
+  text-transform:uppercase;background:var(--bg);padding:0 6px;
+}
+
+.roles{
+  flex:1;display:grid;grid-template-columns:repeat(3,1fr);gap:0;
+  border-top:1px solid var(--line);
+  align-items:stretch;
+}
+.role{
+  position:relative;
+  padding:48px 40px;
+  display:flex;flex-direction:column;gap:18px;
+  border-right:1px solid var(--line);
+  cursor:pointer;
+  transition:background .25s, opacity .25s, filter .25s;
+}
+.role:last-child{border-right:0}
+.role--bridge{
+  background:var(--bg-soft-2);
+  border-left:1px solid var(--accent-soft);
+  border-right:1px solid var(--accent-soft)!important;
+}
+.role--bridge::before{
+  content:"";position:absolute;left:-1px;right:-1px;top:0;height:2px;
+  background:var(--accent);
+}
+.roles.has-focus .role:not(.focus){opacity:.32;filter:saturate(.3)}
+.role.focus{background:var(--bg-soft)}
+.role--bridge.focus{background:var(--accent-soft)}
+.role-num{font:500 11px/1 var(--sans-en);letter-spacing:.14em;color:var(--ink-mute)}
+.role-action{
+  font:700 64px/.9 var(--sans-en);letter-spacing:-.03em;color:var(--ink);
+  display:flex;flex-direction:column;gap:2px;
+}
+.role-action-sub{
+  font:500 18px/1 var(--sans-en);letter-spacing:.02em;color:var(--ink-mute);
+}
+.role.focus .role-action{color:var(--accent)}
+.role--bridge .role-action{color:var(--accent)}
+.role--bridge .role-action-sub{color:var(--accent);opacity:.7}
+.role-title{font:600 22px/1.2 var(--sans-ko);letter-spacing:-.015em;color:var(--ink)}
+.role-sub{font:500 13px/1.3 var(--sans-ko);color:var(--ink-mute);margin-top:-8px}
+.role-desc{font:400 14.5px/1.55 var(--sans-ko);color:var(--ink-soft);margin-top:8px}
+.role-pill{
+  font:500 10.5px/1 var(--sans-en);letter-spacing:.14em;text-transform:uppercase;
+  align-self:flex-start;
+  padding:6px 10px;border:1px solid var(--accent);color:var(--accent);
+  border-radius:999px;margin-top:auto;
+}
+.role-empty{height:24px}
+
+.roles-foot{
+  border-top:1px solid var(--line);padding:24px 56px;
+  display:grid;grid-template-columns:repeat(3,1fr);gap:0;
+}
+.roles-foot-cell{
+  padding:0 16px;border-right:1px solid var(--line-soft);
+  display:flex;flex-direction:column;gap:4px;
+}
+.roles-foot-cell:last-child{border-right:0}
+.roles-foot-k{font:500 10.5px/1.2 var(--sans-en);letter-spacing:.14em;color:var(--ink-mute);text-transform:uppercase}
+.roles-foot-v{font:500 13.5px/1.4 var(--sans-ko);color:var(--ink-mid)}
+
+/* ─── Slide 6: Context engineering definition ─── */
+.ctx-lead{
+  margin:0;font:400 15px/1.55 var(--sans-ko);color:var(--ink-soft);
+}
+.ctx-cluster{
+  display:flex;flex-wrap:wrap;gap:8px;
+}
+.ctx-chip{
+  padding:6px 14px;
+  border:1px solid var(--line);
+  border-radius:999px;
+  font:500 13px/1.2 var(--sans-ko);color:var(--ink-mid);
+  background:var(--bg);
+  letter-spacing:-.005em;
+}
+.ctx-chip--more{
+  border-color:transparent;color:var(--ink-mute);
+  padding-left:6px;
+}
+.ctx-headline{
+  margin:0 0 36px;
+  line-height:1.15;
+}
+.ctx-headline em{color:var(--accent);font-style:normal}
+
+.ctx-body{
+  display:grid;grid-template-columns:1fr 1.25fr;gap:56px;align-items:start;
+  padding:24px 0 0;border-top:1px solid var(--line);
+}
+.ctx-def{
+  display:flex;flex-direction:column;gap:14px;align-items:stretch;
+}
+.ctx-def-tag{
+  font:600 16px/1.3 var(--sans-ko);letter-spacing:-.005em;
+  color:var(--ink);
+}
+.ctx-def-body{
+  display:flex;flex-direction:column;gap:12px;
+}
+.ctx-def-body p{
+  margin:0;
+  font:400 17px/1.7 var(--sans-ko);color:var(--ink-mid);letter-spacing:-.005em;
+}
+.ctx-def-body strong{font-weight:600;color:var(--ink)}
+.ctx-def-body em{font-style:normal;color:var(--accent);font-weight:600}
+
+/* Highlightable keywords (정보/도구/맥락) inline in definition */
+.ctx-key{
+  display:inline-block;
+  padding:1px 8px;border-radius:4px;
+  background:var(--bg-soft);color:var(--ink);
+  font-weight:600;
+  cursor:pointer;
+  transition:background .2s, color .2s, transform .2s;
+}
+.ctx-key:hover,
+.ctx-key.on{background:var(--accent);color:#fff;transform:translateY(-1px)}
+
+/* Diagram: 3 input cards → LLM */
+.ctx-vis{
+  display:grid;
+  grid-template-rows:auto 88px auto;
+  gap:0;
+}
+.ctx-vis-inputs{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:14px;
+}
+.ctx-vis-card{
+  padding:16px 18px;border:1px solid var(--line);background:var(--bg);
+  border-radius:8px;
+  transition:border-color .25s, background .25s, opacity .25s, transform .25s;
+  cursor:pointer;min-height:128px;
+}
+.ctx-vis.has-active .ctx-vis-card:not(.on){opacity:.35}
+.ctx-vis-card.on{border-color:var(--accent);background:var(--bg-soft);transform:translateY(-2px)}
+.ctx-vis-card-label{
+  font:600 15px/1 var(--sans-ko);color:var(--ink-mute);
+  margin-bottom:12px;letter-spacing:-.005em;
+}
+.ctx-vis-card.on .ctx-vis-card-label{color:var(--accent)}
+.ctx-vis-card ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:5px}
+.ctx-vis-card li{
+  font:400 14px/1.45 var(--sans-ko);color:var(--ink-soft);
+  padding-left:10px;position:relative;
+}
+.ctx-vis-card li::before{content:"·";position:absolute;left:0;color:var(--ink-mute)}
+
+.ctx-vis-lines{
+  width:100%;height:88px;overflow:visible;
+}
+.ctx-vis-line{
+  stroke:var(--line);stroke-width:1;
+  transition:stroke .25s, stroke-width .25s;
+}
+.ctx-vis-line.on{stroke:var(--accent);stroke-width:1.5}
+
+.ctx-vis-llm{
+  align-self:center;justify-self:center;
+  padding:14px 44px;
+  border:1.5px solid var(--ink);
+  border-radius:8px;
+  font:700 22px/1 var(--sans-en);letter-spacing:.02em;color:var(--ink);
+  background:var(--bg);
+  transition:border-color .25s, color .25s, background .25s;
+}
+.ctx-vis.has-active .ctx-vis-llm{
+  border-color:var(--accent);color:var(--accent);
+  background:var(--bg-soft);
+}
+
+@media (max-width: 980px){
+  .ctx-body{grid-template-columns:1fr;gap:32px}
+}
+
+/* ─── Slide 7: process as a cycle ─── */
+.proc-cycle{
+  display:grid;grid-template-columns:auto 1fr;gap:64px;
+  align-items:center;
+  margin-top:8px;
+}
+.proc-cycle-diagram{
+  position:relative;
+  width:360px;height:360px;
+  flex-shrink:0;
+}
+.proc-cycle-ring{
+  position:absolute;inset:0;width:100%;height:100%;
+  overflow:visible;
+}
+.proc-cycle-ring .guide{
+  fill:none;stroke:var(--line);stroke-width:1;stroke-dasharray:2 4;
+}
+.proc-cycle-ring .arc{
+  fill:none;stroke:var(--accent);stroke-width:1.5;
+}
+.proc-cycle-ring marker path{
+  fill:none;stroke:var(--accent);stroke-width:1.5;
+}
+.proc-cycle-node{
+  position:absolute;
+  width:92px;height:92px;
+  border:1px solid var(--line);
+  border-radius:50%;
+  background:var(--bg);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+  cursor:pointer;
+  padding:0;
+  transition:background .25s, border-color .25s, color .25s;
+  z-index:2;
+}
+.proc-cycle-node:hover{border-color:var(--ink-mid)}
+.proc-cycle-node.active{
+  background:var(--accent);
+  border-color:var(--accent);
+}
+.proc-cycle-node .n{
+  font:500 10px/1 var(--sans-en);letter-spacing:.14em;color:var(--ink-mute);
+  transition:color .2s;
+}
+.proc-cycle-node.active .n{color:rgba(255,255,255,.7)}
+.proc-cycle-node .t{
+  font:600 14px/1.2 var(--sans-ko);color:var(--ink);letter-spacing:-.01em;
+  text-align:center;padding:0 6px;
+  transition:color .2s;
+}
+.proc-cycle-node.active .t{color:#fff}
+/* Position 4 nodes — coords computed for 360×360 container, 92px node, 130 radius */
+/* positions are computed inline from the step count */
+
+.proc-cycle-center{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+  pointer-events:none;text-align:center;
+}
+.proc-cycle-center .glyph{
+  font:500 44px/1 var(--sans-en);color:var(--accent);
+}
+.proc-cycle-center .label{
+  font:500 12px/1 var(--sans-ko);letter-spacing:.08em;color:var(--accent);
+}
+
+.proc-cycle-detail{
+  display:flex;flex-direction:column;gap:14px;
+  padding:32px 36px;
+  background:var(--bg-soft);
+  border-left:3px solid var(--accent);
+  min-height:200px;
+}
+.proc-cycle-detail .proc-detail-eyebrow{
+  font:500 11px/1 var(--sans-en);letter-spacing:.18em;text-transform:uppercase;color:var(--accent);
+}
+.proc-cycle-detail .proc-detail-title{
+  margin:0;
+  font:700 32px/1.15 var(--sans-ko);letter-spacing:-.02em;color:var(--ink);
+}
+.proc-cycle-detail ul{
+  margin:8px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:10px;
+}
+.proc-cycle-detail li{
+  font:400 15.5px/1.55 var(--sans-ko);color:var(--ink-mid);
+  padding-left:18px;position:relative;
+}
+.proc-cycle-detail li::before{
+  content:"";position:absolute;left:0;top:10px;width:8px;height:1px;background:var(--ink-mid);
+}
+.proc-cycle-resume{
+  align-self:flex-start;margin-top:12px;
+  padding:6px 12px;
+  font:500 11px/1 var(--sans-ko);letter-spacing:.04em;
+  color:var(--accent);background:transparent;
+  border:1px solid var(--accent);border-radius:999px;
+  cursor:pointer;transition:background .2s, color .2s;
+}
+.proc-cycle-resume:hover{background:var(--accent);color:#fff}
+
+@media (max-width: 980px){
+  .proc-cycle{grid-template-columns:1fr;gap:36px}
+  .proc-cycle-diagram{margin:0 auto}
+}
+
+/* ─── Slide 7: cases overview ─── */
+.cases-over{
+  flex:1;display:flex;flex-direction:column;justify-content:center;gap:64px;
+}
+.cases-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:18px;
+}
+.case-card{
+  border:1px solid var(--line);
+  padding:28px 28px 24px;
+  display:flex;flex-direction:column;gap:16px;
+  min-height:280px;cursor:pointer;
+  background:var(--bg);
+  transition:background .25s, border-color .25s, transform .25s;
+  position:relative;overflow:hidden;
+}
+.case-card:hover{border-color:var(--ink);transform:translateY(-2px)}
+.case-card .n{font:500 11px/1 var(--sans-en);letter-spacing:.14em;color:var(--ink-mute)}
+.case-card .t{font:700 26px/1.2 var(--sans-ko);letter-spacing:-.02em;color:var(--ink)}
+.case-card .desc{font:400 14px/1.55 var(--sans-ko);color:var(--ink-soft)}
+.case-card .more{
+  margin-top:auto;
+  font:500 10.5px/1 var(--sans-en);letter-spacing:.14em;text-transform:uppercase;color:var(--accent);
+  display:flex;align-items:center;gap:6px;
+}
+
+/* ─── Slides 8-10: case detail ─── */
+.case-detail{
+  flex:1;display:grid;grid-template-columns:1.1fr 1fr;gap:80px;
+  align-items:center;
+}
+.case-detail-l{
+  display:flex;flex-direction:column;gap:24px;
+}
+.case-detail-eyebrow{font:500 11px/1 var(--sans-en);letter-spacing:.18em;text-transform:uppercase;color:var(--ink-mute)}
+.case-detail-title{font:700 clamp(40px,4.6vw,68px)/1.05 var(--sans-ko);letter-spacing:-.03em;color:var(--ink)}
+.case-detail-title small{font-size:.5em;letter-spacing:.02em;font-weight:500;color:var(--ink-soft);display:block;margin-top:8px}
+.case-detail-core{
+  margin-top:8px;padding:18px 22px;background:var(--bg-soft);
+  border-left:3px solid var(--accent);
+  font:500 17px/1.55 var(--sans-ko);color:var(--ink);max-width:540px;
+}
+.case-detail-core em{font-style:normal;color:var(--accent);font-weight:600}
+.case-detail-r{
+  display:flex;flex-direction:column;gap:0;
+  border-top:1px solid var(--line);
+}
+.case-feat{
+  display:grid;grid-template-columns:64px 1fr;gap:24px;
+  padding:20px 0;border-bottom:1px solid var(--line);
+  align-items:flex-start;
+}
+.case-feat-n{
+  font:500 11px/1.2 var(--sans-en);letter-spacing:.14em;color:var(--ink-mute);
+}
+.case-feat-body{display:flex;flex-direction:column;gap:6px}
+.case-feat-body b{font:600 16px/1.3 var(--sans-ko);color:var(--ink);font-weight:600;letter-spacing:-.005em}
+.case-feat-body p{margin:0;font:400 14px/1.55 var(--sans-ko);color:var(--ink-soft)}
+
+/* ─── Slide 11: summary ─── */
+.summary{
+  flex:1;display:flex;flex-direction:column;justify-content:center;gap:64px;
+}
+.summary-headline{
+  font:700 clamp(36px,3.8vw,56px)/1.18 var(--sans-ko);letter-spacing:-.025em;color:var(--ink);
+  max-width:1100px;
+}
+.summary-headline em{font-style:normal;color:var(--accent)}
+.summary-tag{font:500 11px/1 var(--sans-en);letter-spacing:.18em;text-transform:uppercase;color:var(--ink-mute)}
+.summary-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-top:1px solid var(--line)}
+.summary-cell{
+  padding:24px 28px 0 28px;border-right:1px solid var(--line-soft);
+  display:flex;flex-direction:column;gap:8px;
+}
+.summary-cell:first-child{padding-left:0}
+.summary-cell:last-child{border-right:0;padding-right:0}
+.summary-cell .n{font:500 11px/1 var(--sans-en);letter-spacing:.14em;color:var(--accent)}
+.summary-cell .t{font:600 18px/1.3 var(--sans-ko);letter-spacing:-.01em;color:var(--ink)}
+.summary-cell .d{font:400 13.5px/1.55 var(--sans-ko);color:var(--ink-soft)}
+
+/* ─── Slides 13-14: skill lists ─── */
+.skills{
+  flex:1;display:flex;flex-direction:column;gap:36px;
+}
+.skill-list{display:flex;flex-direction:column;gap:0;border-top:1px solid var(--line)}
+.skill-row{
+  display:grid;grid-template-columns:80px 1fr 2fr;gap:32px;
+  padding:28px 0 28px 16px;border-bottom:1px solid var(--line);
+  align-items:center;
+  min-height:104px;
+  position:relative;
+  cursor:pointer;
+  transition:opacity .25s, filter .25s, background .25s;
+}
+.skill-row::before{
+  content:"";position:absolute;left:0;top:50%;transform:translateY(-50%);
+  width:3px;height:0;background:var(--accent);
+  transition:height .3s cubic-bezier(.2,.8,.2,1);
+}
+.skill-list.has-focus .skill-row:not(.focus){opacity:.32;filter:saturate(.3)}
+.skill-row.focus::before{height:60%}
+.skill-row.focus{background:var(--bg-soft-2)}
+.skill-row.pinned::before{height:80%}
+.skill-row .n{
+  font:600 12px/1 var(--sans-en);letter-spacing:.14em;color:var(--accent);padding-top:4px;
+}
+.skill-row .name{
+  font:700 28px/1.15 var(--sans-ko);letter-spacing:-.02em;color:var(--ink);
+  transition:color .25s;
+}
+.skill-row.focus .name{color:var(--accent)}
+.skill-row .desc{
+  font:400 16px/1.6 var(--sans-ko);color:var(--ink-soft);padding-top:6px;
+}
+.skill-note{
+  margin-top:24px;padding:18px 22px;
+  background:var(--bg-soft);border-left:3px solid var(--accent);
+  font:500 16px/1.55 var(--sans-ko);color:var(--ink);letter-spacing:-.005em;max-width:760px;
+}
+.skill-note strong{font-weight:600;color:var(--ink)}
+.skill-note em{font-style:normal;color:var(--accent);font-weight:600}
+
+/* ─── Slide 16: 3 mindsets — interactive focus ─── */
+.mindsets{flex:1;display:flex;flex-direction:column;gap:18px}
+.mindset{
+  display:grid;grid-template-columns:80px 1fr;gap:32px;
+  padding:28px 32px;border:1px solid var(--line);background:var(--bg);
+  transition:border-color .25s, background .25s, opacity .25s, filter .25s, transform .25s;
+  cursor:pointer;
+}
+.mindset:hover{border-color:var(--ink)}
+.mindsets.has-focus .mindset:not(.focus){opacity:.35;filter:saturate(.3)}
+.mindset.focus{border-color:var(--accent);background:var(--bg-soft);transform:translateX(4px)}
+.mindset .n{font:500 12px/1 var(--sans-en);letter-spacing:.14em;color:var(--accent);padding-top:6px}
+.mindset .body{display:flex;flex-direction:column;gap:10px}
+.mindset .t{font:700 24px/1.2 var(--sans-ko);letter-spacing:-.015em;color:var(--ink)}
+.mindset ul{margin:6px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px}
+.mindset li{font:400 15px/1.55 var(--sans-ko);color:var(--ink-soft);padding-left:14px;position:relative}
+.mindset li::before{content:"—";position:absolute;left:0;color:var(--ink-mute);font-weight:500}
+
+/* ─── Slide 17: two columns assignment/interview ─── */
+.assign{
+  flex:1;display:grid;grid-template-columns:1fr 1fr;gap:0;
+  border-top:1px solid var(--line);
+}
+.assign-col{
+  padding:36px 40px;display:flex;flex-direction:column;gap:24px;
+  border-right:1px solid var(--line);
+}
+.assign-col:last-child{border-right:0;background:var(--bg-soft)}
+.assign-col-h{display:flex;flex-direction:column;gap:6px}
+.assign-col-tag{font:500 11px/1 var(--sans-en);letter-spacing:.18em;text-transform:uppercase;color:var(--accent)}
+.assign-col-title{font:700 32px/1.15 var(--sans-ko);letter-spacing:-.02em;color:var(--ink)}
+.assign-list{display:flex;flex-direction:column;gap:0}
+.assign-item{
+  display:grid;grid-template-columns:40px 1fr;gap:18px;
+  padding:18px 0;border-top:1px solid var(--line-soft);
+}
+.assign-item:first-child{border-top:0}
+.assign-item .n{font:500 11px/1.2 var(--sans-en);letter-spacing:.12em;color:var(--ink-mute);padding-top:4px}
+.assign-item .body{display:flex;flex-direction:column;gap:6px}
+.assign-item .t{font:600 16px/1.3 var(--sans-ko);letter-spacing:-.005em;color:var(--ink)}
+.assign-item .d{font:400 13.5px/1.55 var(--sans-ko);color:var(--ink-soft)}
+
+/* ─── Slide 19: Q&A ─── */
+.qna{flex:1;display:flex;flex-direction:column;gap:18px;justify-content:center}
+.qna-q{
+  display:grid;grid-template-columns:56px 1fr auto;gap:24px;
+  padding:24px 28px;border:1px solid var(--line);background:var(--bg);
+  cursor:pointer;transition:border-color .25s, background .25s;
+  align-items:center;
+}
+.qna-q:hover{border-color:var(--ink-mid);background:var(--bg-soft-2)}
+.qna-q.open{border-color:var(--accent);background:var(--bg-soft)}
+.qna-q .n{font:600 14px/1 var(--sans-en);letter-spacing:.06em;color:var(--accent)}
+.qna-q .text{font:600 18px/1.4 var(--sans-ko);color:var(--ink);letter-spacing:-.005em}
+.qna-q .ind{
+  font:500 10.5px/1 var(--sans-en);letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink-mute);transition:transform .3s;
+}
+.qna-q.open .ind{color:var(--accent)}
+.qna-a{
+  overflow:hidden;
+  border:1px solid var(--line);border-top:0;background:var(--bg);
+  margin-top:-1px;
+}
+.qna-a-inner{
+  padding:20px 28px 24px 108px;
+  font:400 15px/1.65 var(--sans-ko);color:var(--ink-mid);
+}
+
+/* ─── Slide 18: section cover for Q&A — special ─── */
+.qa-cover-meta{
+  display:flex;gap:32px;align-items:center;
+  font:500 11px/1 var(--sans-en);letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-mute);
+}
+.qa-cover-meta em{font-style:normal;color:var(--accent)}
+
+/* ─── Tweaks accent override ─── */
+.twk-panel.dark{background:rgba(22,22,26,.9)!important;color:#fafafb!important;border-color:rgba(255,255,255,.1)!important}
+
+/* ─── Responsive cushion ─── */
+@media (max-width: 1100px){
+  :root{--content-pad-x:48px;--content-pad-y:56px;--sidebar-w:240px}
+  .case-detail{grid-template-columns:1fr;gap:32px}
+  .proc-detail{grid-template-columns:1fr;gap:24px}
+  .toc-grid{grid-template-columns:1fr}
+  .assign{grid-template-columns:1fr}
+}
+@media (max-width: 760px){
+  .app{grid-template-columns:1fr}
+  .sb{display:none}
+  :root{--content-pad-x:24px;--content-pad-y:40px}
+  .roles, .vs-stage, .cases-grid, .summary-grid{grid-template-columns:1fr}
+  .proc-strip{grid-template-columns:repeat(2,1fr)}
+  .vs-side{display:none}
+  .counter{right:12px;bottom:12px}
+  .navbtn{right:12px}
+}
+
+/* ─── Additions: 25-slide revision ─── */
+/* Slide 6: term labels under each context key */
+.ctx-vis-card-label em{display:block;font:500 11px/1.2 var(--sans-en);letter-spacing:.08em;color:var(--ink-mute);margin-top:6px;font-style:normal}
+.ctx-vis-card.on .ctx-vis-card-label em{color:var(--accent)}
+
+/* Slide 8: tools — 5 rows, tighter than the skills list */
+.tool-list .skill-row{grid-template-columns:80px 1.05fr 2.5fr;gap:28px;padding:19px 0 19px 16px}
+.tool-list .skill-row .name{font-size:23px}
+.tool-list .skill-row .desc{font-size:15.5px;line-height:1.5;padding-top:4px}
+
+/* Slides 9 & 15: four cases instead of three */
+.cases-grid{grid-template-columns:repeat(4,1fr);gap:14px}
+.case-card{padding:24px 22px 20px}
+.case-card .t{font-size:21px;line-height:1.25}
+.summary-grid{grid-template-columns:repeat(4,1fr)}
+.summary-cell{padding:22px 22px 0 22px}
+.summary-cell .t{font-size:18px}
+.summary-cell .d{font-size:13.5px}
+
+/* Slides 10–12: hardest-part line under the core statement */
+.case-hard{margin-top:20px;padding-top:16px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:7px}
+.case-hard b{font:500 11px/1 var(--sans-en);letter-spacing:.18em;color:var(--ink-mute)}
+.case-hard span{font:400 15px/1.55 var(--sans-ko);color:var(--ink-mid);text-wrap:pretty}
+
+/* Slide 14: the hardest part — only two cards, so give them room */
+.mindsets.hardest{justify-content:center;gap:22px}
+.hardest .mindset{padding:38px 40px}
+.hardest .mindset .t{font-size:28px}
+.hardest .mindset li{font-size:18px;line-height:1.5}
+
+/* Slide 23: pre-submitted questions — interactive groups */
+.preqx{flex:1;display:grid;grid-template-columns:360px 1fr;gap:0;border-top:1px solid var(--line)}
+.preqx-tabs{display:flex;flex-direction:column;border-right:1px solid var(--line);padding:12px 0}
+.preqx-tab{
+  appearance:none;background:none;border:0;text-align:left;cursor:pointer;
+  display:grid;grid-template-columns:auto 1fr;align-items:center;gap:16px;
+  padding:20px 28px 20px 22px;position:relative;
+  transition:background .25s,opacity .25s;
+}
+.preqx-tab::before{content:"";position:absolute;left:0;top:50%;transform:translateY(-50%);width:3px;height:0;background:var(--accent);transition:height .3s cubic-bezier(.2,.8,.2,1)}
+.preqx-tab.on::before{height:64%}
+.preqx-tab .n{font:600 12px/1 var(--sans-en);letter-spacing:.14em;color:var(--ink-mute);transition:color .25s}
+.preqx-tab .t{font:600 20px/1.3 var(--sans-ko);letter-spacing:-.015em;color:var(--ink-mid);transition:color .25s}
+.preqx-tab .c{font:500 12px/1 var(--sans-en);color:var(--ink-mute);border:1px solid var(--line);border-radius:999px;padding:5px 9px;transition:border-color .25s,color .25s}
+.preqx-tab:hover .t{color:var(--ink)}
+.preqx-tab.on{background:var(--bg-soft)}
+.preqx-tab.on .n,.preqx-tab.on .t{color:var(--accent)}
+.preqx-tab.on .c{border-color:var(--accent);color:var(--accent)}
+.preqx-panel{padding:34px 8px 24px 48px;display:flex;flex-direction:column;gap:22px;animation:preqIn .3s ease both}
+@keyframes preqIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.preqx-panel-label{font:600 13px/1 var(--sans-ko);letter-spacing:-.01em;color:var(--accent)}
+.preqx-list{display:flex;flex-direction:column;gap:0}
+.preqx-q{display:grid;grid-template-columns:34px 1fr;gap:18px;padding:20px 0;border-top:1px solid var(--line-soft)}
+.preqx-q:first-child{border-top:0;padding-top:0}
+.preqx-q .mark{font:600 14px/1.4 var(--sans-en);color:var(--accent)}
+.preqx-q .text{font:500 19px/1.55 var(--sans-ko);letter-spacing:-.01em;color:var(--ink);text-wrap:pretty}
+
+/* ─── Fit passes: slide 02 (TOC) and slide 22 (assignment/interview) ─── */
+.toc-item{padding:26px 30px;gap:11px}
+.toc-name{font-size:25px}
+.assign-col{padding:26px 34px;gap:16px}
+.assign-col-title{font-size:27px}
+.assign-item{padding:12px 0;gap:16px}
+.assign-item .t{font-size:15.5px}
+.assign-item .d{font-size:13px;line-height:1.45}
+.assign-slide .slide-foot{padding-top:26px}
+
+/* Slide 21: evaluation column · Slide 22: single-column interview */
+.eval-list{display:flex;flex-direction:column;gap:0}
+.eval-item{display:grid;grid-template-columns:20px 1fr;gap:14px;padding:12px 0;border-top:1px solid var(--line-soft)}
+.eval-item:first-child{border-top:0}
+.eval-item .mark{font:500 13px/1.5 var(--sans-en);color:var(--accent)}
+.eval-item .body{display:flex;flex-direction:column;gap:6px}
+.eval-item .t{font:600 15.5px/1.35 var(--sans-ko);letter-spacing:-.005em;color:var(--ink)}
+.eval-item .d{font:400 13px/1.45 var(--sans-ko);color:var(--ink-soft)}
+.assign--single{grid-template-columns:1fr}
+.assign--single .assign-col{border-right:0;background:none;padding:30px 0 0}
+.assign--single .assign-item{grid-template-columns:56px 1fr;gap:24px;padding:24px 0}
+.assign--single .assign-item .t{font-size:23px;line-height:1.25}
+.assign--single .assign-item .d{font-size:16px;line-height:1.55}
+.assign--single .assign-item .n{font-size:12px}
+
+.proc-cycle-node .t{font-size:13.5px;letter-spacing:-.02em;word-break:keep-all}
+
+/* Slide 08: tool chips with brand icons */
+.tool-list .skill-row .desc{display:flex;flex-direction:column;gap:9px;padding-top:2px}
+.tool-chips{display:flex;flex-wrap:wrap;gap:8px}
+.tool-chip{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:7px 13px 7px 11px;border:1px solid var(--line);border-radius:999px;
+  background:var(--bg);font:500 14px/1 var(--sans-ko);letter-spacing:-.01em;color:var(--ink);
+  transition:border-color .25s,background .25s;
+}
+.skill-row.focus .tool-chip{border-color:var(--ink-mute);background:#fff}
+.tool-chip-img{width:16px;height:16px;object-fit:contain;display:block}
+.tool-chip-glyph{width:16px;font:400 13px/1 var(--sans-en);color:var(--ink-mute);text-align:center}
+.tool-note{font:400 13.5px/1.5 var(--sans-ko);color:var(--ink-mute)}
+
+.display,.cover-title,.title-headline,.skill-row .name,.mindset .t,.case-detail-title,.summary-headline,.assign-col-title,.preqx-tab .t{word-break:keep-all}
+
+.tool-chip-svg{width:16px;height:16px;display:block;color:var(--ink-mid);flex:0 0 16px}
+.skill-row.focus .tool-chip-svg{color:var(--accent)}
+
+.case-hard{display:none}
+
+.summary-lede{font:500 24px/1.4 var(--sans-ko);letter-spacing:-.015em;color:var(--ink-mid);word-break:keep-all}
+
+/* Slide 05: shorter role columns, vertically centered block */
+.roles{flex:0 0 auto;margin-top:auto}
+.role{padding:32px 36px}
+.role-empty{height:14px}
+.roles-foot{margin-bottom:auto;padding:20px 56px}
+
+/* Slide 05: align the footer cells to the card columns above */
+.roles-foot{padding:20px 0}
+.roles-foot-cell{padding:0 36px}
+/* Case slides: larger CASE eyebrow */
+.case-detail-eyebrow{font-size:19px;letter-spacing:.14em}
+
+/* Slide 18: four mindset cards */
+.mindsets{gap:12px}
+.mindset{padding:20px 30px}
+.mindset .t{font-size:22px}
+.mindset ul{margin:4px 0 0;gap:4px}
+.mindset li{font-size:14.5px;line-height:1.5}
+
+/* Slide 20: single dense list */
+.assign--dense .assign-col{padding:22px 0 0}
+.assign--dense .assign-item{padding:15px 0}
+.assign--dense .assign-item .t{font-size:20px}
+.assign--dense .assign-item .d{font-size:15px;line-height:1.5}
+
+/* Slide 02: mentor intro */
+.mentor{flex:0 0 auto;margin:auto 0;display:flex;flex-direction:column;border-top:1px solid var(--line)}
+.mentor-row{display:grid;grid-template-columns:180px 1fr;gap:32px;padding:26px 0 26px 4px;border-bottom:1px solid var(--line)}
+.mentor-row .k{font:600 15px/1.4 var(--sans-ko);letter-spacing:-.01em;color:var(--accent)}
+.mentor-row .v{font:500 24px/1.4 var(--sans-ko);letter-spacing:-.015em;color:var(--ink);word-break:keep-all}
+
+/* Slide 02: simpler mentor list */
+.mentor{flex:0 0 auto;margin:auto 0;list-style:none;padding:0;display:flex;flex-direction:column;gap:12px;border-top:0}
+.mentor li{font:500 20px/1.5 var(--sans-ko);letter-spacing:-.01em;color:var(--ink-mid);padding-left:18px;position:relative;word-break:keep-all}
+.mentor li::before{content:"—";position:absolute;left:0;color:var(--ink-mute)}
+
+/* Slide 02: label + value, pushed toward the right */
+.mentor{flex:0 0 auto;margin:auto 0 auto auto;width:min(66%,760px);display:flex;flex-direction:column;gap:0;border-top:1px solid var(--line);list-style:none;padding:0}
+.mentor-row{display:grid;grid-template-columns:120px 1fr;gap:28px;padding:18px 0 18px 4px;border-bottom:1px solid var(--line-soft)}
+.mentor-row .k{font:600 14px/1.5 var(--sans-ko);letter-spacing:-.01em;color:var(--accent)}
+.mentor-row .v{font:500 20px/1.5 var(--sans-ko);letter-spacing:-.015em;color:var(--ink);word-break:keep-all}
+
+.mentor{width:min(52%,620px)}
+
+/* Slide 05: click-through step indicator */
+.vs-steps{display:flex;align-items:center;gap:8px}
+.vs-step{
+  width:26px;height:26px;border-radius:999px;border:1px solid var(--line);
+  display:flex;align-items:center;justify-content:center;
+  font:600 12px/1 var(--sans-en);color:var(--ink-mute);
+  transition:border-color .3s,background .3s,color .3s;
+}
+.vs-step.on{border-color:var(--accent);background:var(--accent);color:#fff}
+.vs-steps-hint{font:500 13px/1 var(--sans-ko);color:var(--ink-mute);margin-left:6px}
+.vs-stage{cursor:pointer}
